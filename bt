@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Created by: Pietro Pereira Bertuzzo
+# github repository: https://github.com/pietrobertuzzo/bluetooth_connect
+# This script creates a file in the temp directory to be used as a persistent variable.
+
+if [ ! -f "/tmp/btstatus.dat" ] ; then			# Checks if the file already exists.
+	value=0						# If it doesn't, creates it and sets the flag as false.
+else
+	value=$(cat "/tmp/btstatus.dat")		# If it does, gets the last value.
+fi
+
+if [ "$value" -eq "0" ] ; then				# If lastly disconnected, tries to connect.
+	bluetoothctl connect 5C:C6:E9:81:1B:B2 		# <---- CHANGE MAC ADDRESS HERE.
+	atvalue=1					# Registers the new connection state.
+fi
+
+if [ "$value" -eq "1" ] ; then				# If lastly connected, tries to disconnect.
+	bluetoothctl disconnect 5C:C6:E9:81:1B:B2	# <----- CHANGE MAC ADDRESS HERE.
+	atvalue=0					# Registers the new connection state.
+fi
+
+echo "$atvalue" >/tmp/btstatus.dat			# Updates the (semi) presistent variable to new state.
